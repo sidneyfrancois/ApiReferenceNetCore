@@ -88,7 +88,7 @@ namespace ReferenceAPI.Controllers
         public async Task<IActionResult> PutAsync(
             [FromServices] BlogDataContext context,
             [FromRoute] int id,
-            [FromBody] Category model)
+            [FromBody] EditCategoryDTO model)
         {
             try
             {
