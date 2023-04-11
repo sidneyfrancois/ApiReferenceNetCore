@@ -6,10 +6,9 @@ namespace ReferenceAPI.Controllers
     [ApiController]
     public class CategoryController : ControllerBase
     {
-        [HttpGet("categories")]
+        [HttpGet("v1/categories")]
         public IActionResult Get(
-            [FromServices] BlogDataContext context
-            )
+            [FromServices] BlogDataContext context)
         {
             return Ok(context.Categories.ToList());
         }
