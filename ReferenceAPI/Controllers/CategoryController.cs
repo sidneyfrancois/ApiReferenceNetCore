@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ReferenceAPI.Data;
+using ReferenceAPI.DTO;
 using ReferenceAPI.Models;
 
 namespace ReferenceAPI.Controllers
@@ -51,14 +52,22 @@ namespace ReferenceAPI.Controllers
         [HttpPost("categories")]
         public async Task<IActionResult> PostAsync(
             [FromServices] BlogDataContext context,
-            [FromBody] Category model)
+            [FromBody] CreateCategoryDTO model)
         {
             try
             {
-                await context.Categories.AddAsync(model);
+                var category = new Category()
+                {
+                    Id = 0,
+                    Posts = null,
+                    Name = model.Name,
+                    Slug = model.Slug.ToLower()
+                };
+
+                await context.Categories.AddAsync(category);
                 await context.SaveChangesAsync();
 
-                return Created($"v1/categories/{model.Id}", model);
+                return Created($"v1/categories/{category.Id}", category);
             }
             catch (DbUpdateException e)
             {
