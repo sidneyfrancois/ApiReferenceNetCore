@@ -90,6 +90,11 @@ namespace ReferenceAPI.Controllers
             [FromRoute] int id,
             [FromBody] EditCategoryDTO model)
         {
+            if (!ModelState.IsValid) 
+            {
+                return BadRequest();
+            }
+
             try
             {
                 var category = await context
