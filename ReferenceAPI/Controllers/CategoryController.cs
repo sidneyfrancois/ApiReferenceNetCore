@@ -54,6 +54,11 @@ namespace ReferenceAPI.Controllers
             [FromServices] BlogDataContext context,
             [FromBody] CreateCategoryDTO model)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest();
+            }
+
             try
             {
                 var category = new Category()
@@ -71,7 +76,7 @@ namespace ReferenceAPI.Controllers
             }
             catch (DbUpdateException e)
             {
-                return BadRequest("Nao foi possivel incluir a categoria: ");
+                return StatusCode(500, "Nao foi possivel incluir a categoria: ");
             }
             catch (Exception e)
             {
