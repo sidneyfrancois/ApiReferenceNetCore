@@ -2,6 +2,8 @@
 using Microsoft.EntityFrameworkCore;
 using ReferenceAPI.Data;
 using ReferenceAPI.DTO;
+using ReferenceAPI.ErrorViewModel;
+using ReferenceAPI.Extensions;
 using ReferenceAPI.Models;
 
 namespace ReferenceAPI.Controllers
@@ -17,11 +19,11 @@ namespace ReferenceAPI.Controllers
             try
             {
                 var categories = await context.Categories.ToListAsync();
-                return Ok(categories);
+                return Ok(new ResultViewModel<List<Category>>(categories));
             }
-            catch (Exception e)
+            catch
             {
-                return StatusCode(500, "Falha interna no servidor: " + e);
+                return StatusCode(500, new ResultViewModel<List<Category>>("Falha interna no servidor"));
             }
         }
 
@@ -38,14 +40,14 @@ namespace ReferenceAPI.Controllers
 
                 if (category == null)
                 {
-                    return NotFound();
+                    return NotFound(new ResultViewModel<Category>("categoria nao encontrada"));
                 }
 
-                return Ok(category);
+                return Ok(new ResultViewModel<Category>(category));
             }
             catch (Exception e)
             {
-                return StatusCode(500, "Falha interna no servidor: " + e);
+                return StatusCode(500, new ResultViewModel<Category>("Falha interna no servidor"));
             }
         }
 
@@ -56,7 +58,7 @@ namespace ReferenceAPI.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest();
+                return BadRequest(new ResultViewModel<Category>(ModelState.GetErrors()));
             }
 
             try
@@ -72,15 +74,15 @@ namespace ReferenceAPI.Controllers
                 await context.Categories.AddAsync(category);
                 await context.SaveChangesAsync();
 
-                return Created($"v1/categories/{category.Id}", category);
+                return Created($"v1/categories/{category.Id}", new ResultViewModel<Category>(category));
             }
-            catch (DbUpdateException e)
+            catch (DbUpdateException)
             {
-                return StatusCode(500, "Nao foi possivel incluir a categoria: ");
+                return StatusCode(500, new ResultViewModel<Category>("Nao foi possivel incluir a categoria"));
             }
-            catch (Exception e)
+            catch
             {
-                return StatusCode(500, "Falha interna no servidor: " + e);
+                return StatusCode(500, new ResultViewModel<Category>("Nao foi possivel incluir a categoria"));
             }
         }
 
@@ -92,7 +94,7 @@ namespace ReferenceAPI.Controllers
         {
             if (!ModelState.IsValid) 
             {
-                return BadRequest();
+                return BadRequest(new ResultViewModel<Category>(ModelState.GetErrors()));
             }
 
             try
@@ -103,7 +105,7 @@ namespace ReferenceAPI.Controllers
 
                 if (category == null)
                 {
-                    return NotFound();
+                    return NotFound(new ResultViewModel<Category>("Categoria nao encontrada"));
                 }
 
                 category.Name = model.Name;
@@ -112,15 +114,15 @@ namespace ReferenceAPI.Controllers
                 context.Categories.Update(category);
                 await context.SaveChangesAsync();
 
-                return Ok(model);
+                return Ok(new ResultViewModel<Category>(category));
             }
             catch (DbUpdateException e)
             {
-                return BadRequest("Nao foi possivel atualizar a categoria: ");
+                return BadRequest(new ResultViewModel<Category>("Nao foi possivel atualizar a categoria"));
             }
-            catch (Exception e)
+            catch 
             {
-                return StatusCode(500, "Falha interna no servidor: " + e);
+                return StatusCode(500, new ResultViewModel<Category>("Falha interna no servidor"));
             }
 
             
@@ -139,7 +141,7 @@ namespace ReferenceAPI.Controllers
 
                 if (category == null)
                 {
-                    return NotFound();
+                    return NotFound(new ResultViewModel<Category>("Categoria nao encontrada"));
                 }
 
                 context.Categories.Remove(category);
@@ -149,11 +151,11 @@ namespace ReferenceAPI.Controllers
             }
             catch (DbUpdateException e)
             {
-                return BadRequest("Nao foi possivel deletar a categoria: ");
+                return StatusCode(500, new ResultViewModel<Category>("Nao foi possivel deletar a categoria"));
             }
-            catch (Exception e)
+            catch
             {
-                return StatusCode(500, "Falha interna no servidor: " + e);
+                return StatusCode(500, new ResultViewModel<Category>("Falha interna no servidor"));
             }
         }
     }
